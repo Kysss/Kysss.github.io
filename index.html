@@ -24,17 +24,100 @@
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/orbit-2.css">
 
-    <!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+    <!--jQuery Terminal -->
+    <script src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
+    <script src="https://unpkg.com/jquery.terminal/js/jquery.mousewheel-min.js"></script>
     <script src="https://unpkg.com/jquery.terminal/js/jquery.terminal.min.js"></script>
-    <script src="mycss.css"></script>
-    <link href="https://unpkg.com/jquery.terminal/css/jquery.terminal.min.css" rel="stylesheet" /> -->
+    <script src="https://unpkg.com/js-polyfills/keyboard.js"></script>
+    <link href="https://unpkg.com/jquery.terminal/css/jquery.terminal.min.css" rel="stylesheet" />
 
-    <script src="https://unpkg.com/jquery.terminal/js/jquery.terminal.js"></script>
+    <!--tilda script for fake terminal window-->
+    <script>
 
-    <link href="https://unpkg.com/jquery.terminal/css/jquery.terminal.css" rel="stylesheet" />
+        String.prototype.strip = function (char) {
+            return this.replace(new RegExp("^" + char + "*"), '').
+                replace(new RegExp(char + "*$"), '');
+        }
+
+        $.extend_if_has = function (desc, source, array) {
+            for (var i = array.length; i--;) {
+                if (typeof source[array[i]] != 'undefined') {
+                    desc[array[i]] = source[array[i]];
+                }
+            }
+            return desc;
+        };
+
+
+        (function ($) {
+            $.fn.tilda = function (eval, options) {
+                if ($('body').data('tilda')) {
+                    return $('body').data('tilda').terminal;
+                }
+                this.addClass('tilda');
+                options = options || {};
+                eval = eval || function (command, term) {
+                    term.echo("you don't set eval for tilda");
+                };
+                var settings = {
+                    prompt: '[[b;mediumaquamarine;black]Guest@OnEarth> ',
+                    name: 'tilda',
+                    height: 500,
+                    enabled: false,
+                    greetings: 'Welcome! You can press ` again anytime to minimize this terminal. More commands will be updated soon...',
+                    keypress: function (e) {
+                        if (e.which == 96) {
+                            return false;
+                        }
+                    }
+                };
+                if (options) {
+                    $.extend(settings, options);
+                }
+                this.append('<div class="td"></div>');
+                var self = this;
+                self.terminal = this.find('.td').terminal(eval, settings);
+                var focus = false;
+                $(document.documentElement).keypress(function (e) {
+                    if (e.which == 96) {
+                        self.slideToggle('fast');
+                        self.terminal.focus(focus = !focus);
+                        self.terminal.attr({
+                            scrollTop: self.terminal.attr("scrollHeight")
+                        });
+                    }
+                });
+                $('body').data('tilda', this);
+                this.hide();
+                return self;
+            };
+        })(jQuery);
+
+
+        //-------Customized commands functions------->
+        function customized(command, terminal){
+            var tokens = command.split(" ");
+            if(tokens[0]=="cat"){
+
+            }
+        }
+        //--------------------------------------------------------------------------
+        jQuery(document).ready(function ($) {
+
+            $('#tilda').tilda(function (command, terminal) {
+                terminal.echo('you type command "' + command + '"');
+            });
+        });
+
+    </script>
+
+
 </head>
 
 <body>
+    <div id="tilda"></div>
+
     <div class="wrapper">
         <div class="sidebar-wrapper">
             <div class="profile-container">
@@ -52,7 +135,8 @@
                     <!-- <li class="website"><i class="fas fa-instagram"></i><a href="https://themes.3rdwavemedia.com/bootstrap-templates/resume/orbit-free-resume-cv-bootstrap-theme-for-developers/" target="_blank">portfoliosite.com</a></li> -->
                     <li class="linkedin"><i class="fab fa-linkedin-in"></i><a
                             href="https://www.linkedin.com/in/yingyingxia/" target="_blank"> yingyingxia</a></li>
-                    <li class="github"><i class="fab fa-github"></i><a href="#" target="_blank">Kysss</a></li>
+                    <li class="github"><i class="fab fa-github"></i><a href="https://github.com/Kysss"
+                            target="_blank">Kysss</a></li>
                     <li class="instagram"><i class="fab fa-instagram"></i><a href="https://www.instagram.com/yyxia/"
                             target="_blank">@yyxia</a></li>
                 </ul>
@@ -102,12 +186,16 @@
                 <div class="summary">
                     <p>Full-stack developer with both academic,
                         personal and hands-on Enterprise experience in front and back-end development. Has a good
-                        understanding and knowledge Java,
+                        understanding and knowledge of Java,
                         Python, SQL, JavaScript, HTML and database analysis and design.
                         Driven individual with the ability to adapt to any situation and to grow self and others.
                         I am passionate about building software that would help people in achieving their goals more
                         efficiently, and I am seeking for a full-time opportunity where I can be part of the growing
                         team to make impacts.
+                    </p>
+                    <p>
+                        <i class="fa fa-toggle-on" aria-hidden="true"></i> You can press the ` key on your keyboard to
+                        see more!!
                     </p>
                 </div>
                 <!--//summary-->
@@ -294,50 +382,6 @@
 
 </body>
 <!-- <script src="myScript.js"></script> -->
-<script>
-    (function ($) {
-        $.fn.tilda = function (eval, options) {
-            if ($('body').data('tilda')) {
-                return $('body').data('tilda').terminal;
-            }
-            this.addClass('tilda');
-            options = options || {};
-            eval = eval || function (command, term) {
-                term.echo("you don't set eval for tilda");
-            };
-            var settings = {
-                prompt: 'tilda> ',
-                name: 'tilda',
-                height: 100,
-                enabled: false,
-                greetings: 'Quake like console',
-                keypress: function (e) {
-                    if (e.which == 96) {
-                        return false;
-                    }
-                }
-            };
-            if (options) {
-                $.extend(settings, options);
-            }
-            this.append('<div class="td"></div>');
-            var self = this;
-            self.terminal = this.find('.td').terminal(eval,
-                settings);
-            var focus = false;
-            $(document.documentElement).keypress(function (e) {
-                if (e.charCode == 96) {
-                    self.slideToggle('fast');
-                    self.terminal.command_line.set('');
-                    self.terminal.focus(focus = !focus);
-                }
-            });
-            $('body').data('tilda', this);
-            this.hide();
-            return self;
-        };
-    })(jQuery);
 
-</script>
 
 </html>
