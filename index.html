@@ -32,6 +32,26 @@
     <script src="https://unpkg.com/js-polyfills/keyboard.js"></script>
     <link href="https://unpkg.com/jquery.terminal/css/jquery.terminal.min.css" rel="stylesheet" />
 
+    <!--[if IE]>
+<style>
+body {
+    margin: 0;
+    padding: 0;
+}
+.tilda {
+    position: absolute;
+}
+</style>
+<script>
+jQuery(document).ready(function($) {
+   $(window).scroll(function() {
+      $('.tilda').each(function() {
+         $(this).css({top: $('body').prop('scrollTop')});
+      });
+   });
+});
+</script>
+<![endif]-->
     <!--tilda script for fake terminal window-->
     <script>
 
@@ -65,7 +85,8 @@
                     name: 'tilda',
                     height: 500,
                     enabled: false,
-                    greetings: 'Welcome! You can press ` again anytime to minimize this terminal. More commands will be updated soon...',
+                    greetings: 'Welcome! You can press ` again anytime to minimize this terminal. More commands will be updated soon...' +
+                        '\nCurrent available commands are: help, pwd, whoami, guess, date',
                     keypress: function (e) {
                         if (e.which == 96) {
                             return false;
@@ -96,18 +117,95 @@
 
 
         //-------Customized commands functions------->
-        function customized(command, terminal){
+        function customized(command, terminal) {
             var tokens = command.split(" ");
-            if(tokens[0]=="cat"){
+            if (tokens[0] == "help") {
+                terminal.echo(' - ---- -');
+            } else if (tokens[0] == 'pwd') {
+                terminal.echo('Earth');
+            } else if (tokens[0] == 'date') {
+                var today = new Date();
+                // var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+                // var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                // var dateTime = date + ' ' + time;
+                // terminal.echo(dateTime);
+                terminal.echo(today);
+            } else if (tokens[0] == 'whoami') {
+                terminal.echo('An earthling');
+            } else if (tokens[0] == 'play') {
+                terminal.echo('Game Rules: ' +
+                    '\nYou and the computer will play a game with piles of stones. '
+                    + '\nThere are even nunber of piles arranged in a row, and each pile has a positive integer number of stones'
+                    + '\nYour objective is to end with the most stones. The total number of stones is odd, so there is not ties'
+                    + '\nYou and the computer take turns, with you starting first. '
+                    + '\nEach turn, each player take the entire pile of stones from either the beginning or the end of the row.'
+                    + '\nThis continues until there is no more piles left, at which point the side with the most stones wins.'
+                    + '\n'
+                    + '\nYou can type head to choose the very first pile; you can type tail to choose the very last pile');
+                terminal.push(stone_game, {
+                    prompt: 'StoneGame > ',
+                    name: 'StoneGame > '
 
+                });
+            } else if (tokens[0] == 'guess') {
+                terminal.echo('Game Rules: ' + '\nA random number between 1 - 100 inclusive will be generated. ' +
+                    '\nYou want to figure out which number it is with as few guesses as possible.');
+                number = Math.floor(Math.random() * 101);
+                guessCount = 0;
+                terminal.push(guess_number, {
+                    prompt: 'GuessNumber > ',
+                    name: 'GuessNumber > '
+                });
             }
         }
+
+        function stone_game(command, terminal) {
+            var flag = true;
+            var tokens = command.split(" ");
+            if (tokens[0] == 'start') {
+                terminal.echo('testing');
+            }
+
+            if (tokens[0] == 'exit' || tokens[0] == 'quit') {
+                terminal.pop();
+            }
+        }
+
+        var number = 0;
+        var guessCount = 0;
+
+        function guess_number(command, terminal) {
+
+
+            //terminal.echo('debug' + number);
+            guessCount++;
+            var tokens = command.split(" ");
+            if (tokens[0] == number) {
+                terminal.echo('[[b;green;]Correct]. You guessed it right in ' + guessCount + ' times! The number is ' + number +'.');
+
+
+                terminal.pop();
+            } else if (tokens[0] < number) {
+                terminal.echo('[[b;red;]Nope]. ' + tokens[0] + ' is too small.');
+
+            } else if (tokens[0] > number) {
+                terminal.echo('[[b;red;]Nope]. ' + tokens[0] + ' is too big.');
+
+            } else if (tokens[0] == 'quit' || tokens[0] == 'exit') {
+                terminal.pop();
+            } else {
+                terminal.echo('Command not found.');
+            }
+
+        }
+
+
         //--------------------------------------------------------------------------
         jQuery(document).ready(function ($) {
-
-            $('#tilda').tilda(function (command, terminal) {
-                terminal.echo('you type command "' + command + '"');
-            });
+            $('#tilda').tilda(customized);
+            // $('#tilda').tilda(function (command, terminal) {
+            //     terminal.echo('you type command "' + command + '"');
+            // });
         });
 
     </script>
@@ -194,7 +292,8 @@
                         team to make impacts.
                     </p>
                     <p>
-                        <i class="fa fa-toggle-on" aria-hidden="true"></i> If you are using a computer, you can press the ` key on your keyboard to
+                        <i class="fa fa-toggle-on" aria-hidden="true"></i> If you are using a computer, you can press
+                        the ` key on your keyboard to
                         bring up a terminal~
                     </p>
                 </div>
@@ -219,7 +318,7 @@
                     <div class="details">
                         <p><i class="fa fa-code"></i> Closely involved in all stages of SDLC. Took ownership over
                             customer facing applications and implement new
-                            features accordingly to requirements. Developed interfaces, primarily for
+                            features according to requirements. Developed interfaces, primarily for
                             billing/Meter-To-Cash and human
                             resource reporting, using large data sets. Automated business applications and analyze root
                             causes for
