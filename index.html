@@ -194,6 +194,7 @@ jQuery(document).ready(function($) {
             } else if (tokens[0] == 'quit' || tokens[0] == 'exit') {
                 terminal.pop();
             } else {
+                guessCount--;
                 terminal.echo('Command not found.');
             }
 
