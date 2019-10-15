@@ -86,7 +86,9 @@ jQuery(document).ready(function($) {
                     height: 500,
                     enabled: false,
                     greetings: 'Welcome! You can press ` again anytime to minimize this terminal. More commands will be updated soon...' +
-                        '\nCurrent available commands are: help, pwd, whoami, guess, date',
+                        '\nCurrent available commands are: help, pwd, whoami, date' +
+                        '\nText-based game commands are: guess, hangman ' + 
+                        '\nyou can type exit/quit to exit the game anytime.',
                     keypress: function (e) {
                         if (e.which == 96) {
                             return false;
@@ -125,10 +127,6 @@ jQuery(document).ready(function($) {
                 terminal.echo('Earth');
             } else if (tokens[0] == 'date') {
                 var today = new Date();
-                // var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-                // var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-                // var dateTime = date + ' ' + time;
-                // terminal.echo(dateTime);
                 terminal.echo(today);
             } else if (tokens[0] == 'whoami') {
                 terminal.echo('An earthling');
@@ -156,7 +154,177 @@ jQuery(document).ready(function($) {
                     prompt: 'GuessNumber > ',
                     name: 'GuessNumber > '
                 });
+            } else if (tokens[0] == 'hangman') {
+                terminal.echo('Game Rules: ' + '\n You will need to guess the word or the man will get hanged...');
+                hang_word = "motivation";
+                current_hang_state=0;
+                //print_hang_state(0,terminal);
+
+                terminal.push(hang_man, {
+                    prompt: 'HangMan > ',
+                    name: 'HangMan > '
+                });
             }
+        }
+
+
+
+
+
+        function print_hang_state(count, terminal) {
+            if (count === 0) {
+
+            //    terminal.echo("Good Luck!");
+                terminal.echo("   ____________");
+                terminal.echo("   |           |");
+                terminal.echo("   |            ");
+                terminal.echo("   |            ");
+                terminal.echo("   |            ");
+                terminal.echo("   |");
+                terminal.echo("   |");
+                terminal.echo("   |");
+                terminal.echo("___|___");
+            }
+            if (count === 1) {
+            //    terminal.echo('[[b;red;]Nope!]. ' + 'Wrong guess, try again');
+                terminal.echo("   ____________");
+                terminal.echo("   |          _|_");
+                terminal.echo("   |         /   \\   ");
+                terminal.echo("   |        |     |   ");
+                terminal.echo("   |         \\_ _/  ");
+                terminal.echo("   |");
+                terminal.echo("   |");
+                terminal.echo("   |");
+                terminal.echo("___|___");
+            }
+
+            if (count === 2) {
+             //   terminal.echo("[[b;red;]Nope!]. " + "Wrong guess, try again");
+                terminal.echo("   ____________");
+                terminal.echo("   |          _|_");
+                terminal.echo("   |         /   \\");
+                terminal.echo("   |        |     |");
+                terminal.echo("   |         \\_ _/");
+                terminal.echo("   |           |");
+                terminal.echo("   |           |");
+                terminal.echo("   |");
+                terminal.echo("___|___");
+            }
+            if (count === 3) {
+
+               // terminal.echo("[[b;red;]Nope!]. " + "Wrong guess, try again");
+                terminal.echo("   ____________");
+                terminal.echo("   |          _|_");
+                terminal.echo("   |         /   \\");
+                terminal.echo("   |        |     |");
+                terminal.echo("   |         \\_ _/");
+                terminal.echo("   |           |");
+                terminal.echo("   |           |");
+                terminal.echo("   |          /  ");
+                terminal.echo("___|___      /   ");
+
+            }
+
+            if (count === 4) {
+               // terminal.echo("[[b;red;]Nope!]. " + "Wrong guess, try again");
+                terminal.echo("   ____________");
+                terminal.echo("   |          _|_");
+                terminal.echo("   |         /   \\");
+                terminal.echo("   |        |     |");
+                terminal.echo("   |         \\_ _/");
+                terminal.echo("   |           |");
+                terminal.echo("   |           |");
+                terminal.echo("   |          / \\ ");
+                terminal.echo("___|___      /   \\");
+            }
+
+            if (count === 5) {
+                //terminal.echo("[[b;red;]Nope!]. " + "Wrong guess, you've got one last chance!");
+                terminal.echo("   ____________");
+                terminal.echo("   |          _|_");
+                terminal.echo("   |         /   \\");
+                terminal.echo("   |        |     |");
+                terminal.echo("   |         \\_ _/");
+                terminal.echo("   |          _|");
+                terminal.echo("   |         / | ");
+                terminal.echo("   |          / \\ ");
+                terminal.echo("___|___      /   \\");
+            }
+
+            if (count === 6) {
+                terminal.echo("GAME OVER! ");
+                terminal.echo("   ____________");
+                terminal.echo("   |          _|_");
+                terminal.echo("   |         /   \\");
+                terminal.echo("   |        |     |");
+                terminal.echo("   |         \\_ _/");
+                terminal.echo("   |          _|_");
+                terminal.echo("   |         / | \\");
+                terminal.echo("   |          / \\ ");
+                terminal.echo("___|___      /   \\");
+                terminal.pop();
+            }
+
+        }
+        function pick_random() {
+
+        }
+
+
+        var hang_word = "motivation";
+
+        var current_hang_state = 0;
+        var indices_set = new Set([]);
+        function hang_man(command, terminal) {
+            command = command.toLowerCase();
+            if (command == 'exit' || command == 'quit') {
+                terminal.pop();
+            }
+            //var indices = [];
+            var countIndex = 0;
+            for (var i = 0; i < hang_word.length; i++) {
+                if (hang_word[i] === command) {
+                    if (indices_set.add(i)) {
+                        countIndex++;
+                        
+                    }
+
+
+                }
+            }
+           // terminal.echo("count " + countIndex);
+            
+            if (countIndex === 0) {
+                current_hang_state++;
+                
+                print_hang_state(current_hang_state, terminal);
+                terminal.echo('[[b;red;]Nope.]');
+                // if(current_hang_state===6){
+                //     terminal.pop();
+                // }
+
+            } else {
+                //found indices. show all 
+                var current_display_word = "";
+                print_hang_state(current_hang_state, terminal);
+                for (var i = 0; i < hang_word.length; i++) {
+                    if (indices_set.has(i)) {
+                        current_display_word += " ";
+                        current_display_word += hang_word[i];
+
+                    } else {
+                        current_display_word += " _ ";
+                    }
+                }
+                terminal.echo('[[b;green;]Correct! ]' + current_display_word);
+
+            }
+
+            if (indices_set.size === hang_word.length) {
+                terminal.echo('[[b;green;]You have guessed all! ]' + 'The word is : ' + hang_word);
+                terminal.pop();
+            }
+
         }
 
         function stone_game(command, terminal) {
