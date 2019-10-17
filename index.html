@@ -158,6 +158,7 @@ jQuery(document).ready(function($) {
                 terminal.echo('Game Rules: ' + '\n You will need to guess the word or the man will get hanged...');
                 hang_word = "motivation";
                 current_hang_state=0;
+                indices_set = new Set([]);
                 //print_hang_state(0,terminal);
 
                 terminal.push(hang_man, {
